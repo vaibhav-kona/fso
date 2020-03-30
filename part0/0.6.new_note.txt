@@ -1,0 +1,20 @@
+note over browser:
+browser prevents default
+action to server and
+adds new note to existing
+"notes"
+end note
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+server-->browser: JSON response
+
+note over browser:
+browser executes code
+that renders notes to display
+end note
+
+note over browser:
+Ideally browser should update
+notes only if POST response from
+server is successful
+end note

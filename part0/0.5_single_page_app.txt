@@ -1,20 +1,9 @@
-browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
-server-->browser: HTML-code to redirect
-note over server:
-server creates a new note
-and adds it existing notes
-end note
-
-note over server:
-server asks browser to 
-reload and fetch "/notes"
-end note
-browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/spa
 server-->browser: HTML-code
 browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
 server-->browser: main.css
-browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
-server-->browser: main.js
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/spa.js
+server-->browser: spa.js
 
 note over browser:
 browser starts executing js-code
