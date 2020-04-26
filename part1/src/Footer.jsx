@@ -1,8 +1,8 @@
 import React from 'react';
 
-const Footer = ({ exercises1, exercises2, exercises3 }) => {
+const Footer = ({ parts }) => {
   return (
-    <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>
+    <p>Number of exercises {parts[0].exercises + parts[1].exercises + parts[2].exercises}</p>
   );
 };
 
