@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Button from './feedback/Button';
+
+function Button({ name, handleClick }) {
+  return (
+    <button onClick={handleClick}>{name}</button>
+  );
+}
 
 const Statistic = ({ text, value }) => {
   return (
