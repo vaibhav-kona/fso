@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = ({ course }) => <h1>{course}</h1>;
+const Header = ({ course }) => <h2>{course}</h2>;
 
 const Content = ({ parts }) => parts.map((part) => <Part key={part.name} part={part} />);
 
