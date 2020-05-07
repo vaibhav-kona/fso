@@ -13,8 +13,15 @@ const App = () => {
 
   const handleNameSubmission = (e) => {
     e.preventDefault();
-    setPersons(persons.concat({ name: newName }));
-    setNewName('');
+
+    const present = persons.reduce((p, pr) => pr.name === newName ? true : p, false);
+
+    if (present) {
+      window.alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons(persons.concat({ name: newName }));
+      setNewName('');
+    }
   }
 
   return (
