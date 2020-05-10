@@ -73,7 +73,7 @@ const App = () => {
     setFilter(e.target.value);
   }
 
-  const handleNameSubmission = (e) => {
+  const handlePersonSubmission = (e) => {
     e.preventDefault();
 
     const present = persons.reduce((p, pr) => pr.name === newName ? true : p, false);
@@ -81,7 +81,21 @@ const App = () => {
     if (present) {
       window.alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
+      const newPerson = { name: newName, number: newNumber };
+
+      axios.post('http://localhost:3001/persons', newPerson)
+        .then((response) => {
+          console.log('response.data : ', response.data);
+          axios.get('http://localhost:3001/persons')
+            .then((response) => {
+              setPersons(response.data);
+            });
+        })
+        .catch((err) => {
+          window.alert(err);
+        })
+
+      // setPersons(persons.concat(newPerson));
       setNewName('');
       setNewNumber('');
     }
@@ -100,7 +114,7 @@ const App = () => {
         newNumber={newNumber}
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
-        handleNameSubmission={handleNameSubmission}
+        handleNameSubmission={handlePersonSubmission}
       />
 
       <h2>Numbers</h2>
