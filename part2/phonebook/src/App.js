@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios';
 import personsService from './services/persons'
 
 const FilterForm = ({ filter, handleFilterChange }) => (
@@ -30,12 +29,16 @@ const NewPersonForm = (
     </>
   );
 
-const Persons = ({ persons, filter }) => (
+const Persons = ({ persons, filter, handlePersonDeletion }) => (
   <>
     {persons.map((person) => {
       if (person.name.toLowerCase().includes(filter.toLowerCase())) {
         return (
-          <Person key={person.name} person={person} />
+          <Person
+            key={person.name}
+            person={person}
+            handlePersonDeletion={handlePersonDeletion}
+          />
         );
       }
 
@@ -44,7 +47,14 @@ const Persons = ({ persons, filter }) => (
   </>
 );
 
-const Person = ({ person }) => <p>{person.name} {person.number}</p>;
+const Person = ({ person, handlePersonDeletion }) => {
+  return (
+    <p>
+      <span>{person.name} {person.number}</span>
+      <button onClick={() => handlePersonDeletion(person)}>delete</button>
+    </p>
+  );
+};
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -93,9 +103,23 @@ const App = () => {
           window.alert(err);
         })
 
-      // setPersons(persons.concat(newPerson));
       setNewName('');
       setNewNumber('');
+    }
+  }
+
+  const handlePersonDeletion = (person) => {
+    if (!person) {
+      throw new Error('person is not valid');
+    }
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personsService.remove(person.id)
+        .then(() => {
+          personsService.getAll()
+            .then((responseData) => {
+              setPersons(responseData);
+            })
+        })
     }
   }
 
@@ -117,7 +141,11 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons persons={persons} filter={filter} />
+      <Persons
+        persons={persons}
+        filter={filter}
+        handlePersonDeletion={handlePersonDeletion}
+      />
 
     </div>
   )
