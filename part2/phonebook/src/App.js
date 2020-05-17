@@ -86,26 +86,36 @@ const App = () => {
   const handlePersonSubmission = (e) => {
     e.preventDefault();
 
-    const present = persons.reduce((p, pr) => pr.name === newName ? true : p, false);
+    const personPresentInCurrentData = persons.find(p => p.name === newName);
 
-    if (present) {
-      window.alert(`${newName} is already added to phonebook`);
+    const person = { name: newName, number: newNumber };
+
+    if (personPresentInCurrentData) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with new one?`)) {
+        personsService.update(personPresentInCurrentData.id, person)
+          .then(() => { fetchAllPersons(); })
+          .catch((err) => { window.alert(err); })
+
+        clearForm();
+      }
     } else {
-      const newPerson = { name: newName, number: newNumber };
+      personsService.create(person)
+        .then(() => { fetchAllPersons(); })
+        .catch((err) => { window.alert(err); })
 
-      personsService.create(newPerson)
-        .then((response) => {
-          personsService.getAll().then((allPersons) => {
-            setPersons(allPersons);
-          });
-        })
-        .catch((err) => {
-          window.alert(err);
-        })
-
-      setNewName('');
-      setNewNumber('');
+      clearForm();
     }
+  }
+
+  const fetchAllPersons = () => {
+    personsService.getAll().then((allPersons) => {
+      setPersons(allPersons);
+    });
+  }
+
+  const clearForm = () => {
+    setNewName('');
+    setNewNumber('');
   }
 
   const handlePersonDeletion = (person) => {
