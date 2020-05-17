@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import personsService from './services/persons'
 
+const NotificationMessage = ({ message, type }) => {
+  let clsName = '';
+
+  if (type === 'success') clsName = 'success-message';
+
+  if (type === 'error') clsName = 'error-message';
+
+  if (!type || !message) return null;
+
+  return (
+    <div className={clsName}>
+      {message}
+    </div>
+  )
+}
+
 const FilterForm = ({ filter, handleFilterChange }) => (
   <>
     <form>
@@ -61,6 +77,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState({ message: '', type: '' })
 
   useEffect(() => {
     personsService.getAll().then((responseData) => {
@@ -83,30 +100,6 @@ const App = () => {
     setFilter(e.target.value);
   }
 
-  const handlePersonSubmission = (e) => {
-    e.preventDefault();
-
-    const personPresentInCurrentData = persons.find(p => p.name === newName);
-
-    const person = { name: newName, number: newNumber };
-
-    if (personPresentInCurrentData) {
-      if (window.confirm(`${newName} is already added to phonebook, replace the old number with new one?`)) {
-        personsService.update(personPresentInCurrentData.id, person)
-          .then(() => { fetchAllPersons(); })
-          .catch((err) => { window.alert(err); })
-
-        clearForm();
-      }
-    } else {
-      personsService.create(person)
-        .then(() => { fetchAllPersons(); })
-        .catch((err) => { window.alert(err); })
-
-      clearForm();
-    }
-  }
-
   const fetchAllPersons = () => {
     personsService.getAll().then((allPersons) => {
       setPersons(allPersons);
@@ -118,6 +111,45 @@ const App = () => {
     setNewNumber('');
   }
 
+  const handlePersonSubmission = (e) => {
+    e.preventDefault();
+
+    const confirmationMessage = `${newName} is already added to phonebook, replace the old number with new one?`;
+
+    const personPresentInCurrentData = persons.find(p => p.name === newName);
+
+    const person = { name: newName, number: newNumber };
+
+    if (personPresentInCurrentData) {
+      if (window.confirm(confirmationMessage)) {
+        personsService.update(personPresentInCurrentData.id, person)
+          .then(() => {
+            setNotificationMessage({ message: `Added ${newName}`, type: 'success' });
+            clearNotificationMessage();
+            fetchAllPersons();
+          })
+          .catch((err) => {
+            window.alert(err);
+          })
+
+        clearForm();
+      }
+    } else {
+      personsService.create(person)
+        .then(() => {
+          setNotificationMessage({ message: `Updated ${newName}`, type: 'success' });
+          clearNotificationMessage();
+          fetchAllPersons();
+        })
+        .catch((err) => {
+          setNotificationMessage({ message: err, type: 'error' });
+          clearNotificationMessage();
+        })
+
+      clearForm();
+    }
+  }
+
   const handlePersonDeletion = (person) => {
     if (!person) {
       throw new Error('person is not valid');
@@ -125,17 +157,20 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personsService.remove(person.id)
         .then(() => {
-          personsService.getAll()
-            .then((responseData) => {
-              setPersons(responseData);
-            })
+          personsService.getAll().then((responseData) => { setPersons(responseData); })
         })
     }
+  }
+
+  const clearNotificationMessage = () => {
+    setTimeout(() => { setNotificationMessage({ message: '', type: '' }); }, 5000);
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <NotificationMessage message={notificationMessage.message} type={notificationMessage.type} />
 
       <FilterForm filter={filter} handleFilterChange={handleFilterChange} />
 
