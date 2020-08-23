@@ -129,7 +129,10 @@ const App = () => {
             fetchAllPersons();
           })
           .catch((err) => {
-            window.alert(err);
+            setNotificationMessage({
+              message: `Information of ${newName} has already been removed from server`,
+              type: 'error'
+            });
           })
 
         clearForm();
