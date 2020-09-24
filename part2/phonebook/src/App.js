@@ -114,43 +114,25 @@ const App = () => {
   const handlePersonSubmission = (e) => {
     e.preventDefault();
 
-    const confirmationMessage = `${newName} is already added to phonebook, replace the old number with new one?`;
-
-    const personPresentInCurrentData = persons.find(p => p.name === newName);
-
     const person = { name: newName, number: newNumber };
 
-    if (personPresentInCurrentData) {
-      if (window.confirm(confirmationMessage)) {
-        personsService.update(personPresentInCurrentData.id, person)
-          .then(() => {
-            setNotificationMessage({ message: `Added ${newName}`, type: 'success' });
-            clearNotificationMessage();
-            fetchAllPersons();
-          })
-          .catch((err) => {
-            setNotificationMessage({
-              message: `Information of ${newName} has already been removed from server`,
-              type: 'error'
-            });
-          })
-
-        clearForm();
-      }
-    } else {
-      personsService.create(person)
-        .then(() => {
+    personsService.create(person)
+      .then((response) => {
+        console.log('response : ', response);
+        if (response.response) {
           setNotificationMessage({ message: `Updated ${newName}`, type: 'success' });
-          clearNotificationMessage();
-          fetchAllPersons();
-        })
-        .catch((err) => {
-          setNotificationMessage({ message: err, type: 'error' });
-          clearNotificationMessage();
-        })
+          clearForm();
+        } else if (response.error) {
+          setNotificationMessage({ message: response.error, type: 'error' });
+        }
 
-      clearForm();
-    }
+        clearNotificationMessage();
+        fetchAllPersons();
+      })
+      .catch((err) => {
+        setNotificationMessage({ message: err, type: 'error' });
+        clearNotificationMessage();
+      })
   }
 
   const handlePersonDeletion = (person) => {
